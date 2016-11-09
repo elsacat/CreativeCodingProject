@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head><title>Demo</title> <meta http-equiv="content-type" content="text/html; charset=utf-8" /></head>
+
+    <body>
+    Shows how to retrive a list of pages from Wikipedia category and corresponding pages from WikiData. <strong>This works</strong>, but just barely ....
+    </p>
+
+    <input id="button1" type="button" value="List of French Impressionniste" />
+    
+    <h2>Query results: Wikipedia and associated Wikidata page</h2>
+    
+    <div id="results"></div>
+    
+    <hr>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+// $(function is the same as $(document).ready(function).
+// The ready method will run code as soon as the DOM is ready
+
+
+
+$(function() {
+    
+    // WP category 
+    var wikipediaCategory =  'Category:French_Impressionist_painters';
+
+    // event handler for the user click on the button1
+    $("#button1").click(function(event) {
+	
+        // Get request with a REST URL
+        $.ajax ({
+            url: 'https://en.wikipedia.org/w/api.php',
+	    type: "GET",
+	    data: {
+		action: 'query',
+		list: 'categorymembers',
+		format: 'json',
+		cmprop: 'title',
+		cmtype: 'page',
+		cmlimit: '500',
+		cmtitle: wikipediaCategory,
+		origin: "*"
+	    },
+            dataType: 'json',
+	    crossDomain: true,
+	    // If we get data, then pass these on to further processing
+            success: getWikiData,
+            error: function(jqXHR,errortype,errormsg) {
+		console.log("HELLO");
+                $("#results").append("<p>Error: " + errortype + ". Please also look at the console log. Maybe you just violoate the JavaScript onesite policy</p>");
+                $("#results").append("<p>jqXHR summary:" + JSON.stringify(jqXHR) + "</p>");
+                console.log(jqXHR);
+                console.log(errormsg);
+            }
+        });
+    });
+});
+
+
+// ------------------- get list of pages in a category from wikipedia
+
+function getWikiData (liste) {
+
+    var pagelist = liste.query.categorymembers;
+
+    for (var page in pagelist) {
+        titleName = pagelist[page].title;
+	// Now pass to display data from WikiData
+	doGetWikiDataEntries (titleName);
+    }
+}
+
+// -------------- Get the list of corresponding wikidata pages
+
+function doGetWikiDataEntries (titleName) {
+
+    $.ajax ({
+        url: 'https://www.wikidata.org/w/api.php',
+	type: "GET",
+	asynch: false,  // THIS IS CRUCIAL FOR RETURNING THE RESULTS !!
+	data: {
+	    action: 'wbgetentities',
+	    format: 'json',
+	    sites: 'enwiki',
+	    titles: titleName,
+	    origin: "*"
+	},
+        dataType: 'json',
+	crossDomain: true,
+	// If we get data, then format these with a function
+	success: function (data) {
+	    // console.log (data);
+	    result = '<li> <a href="http://en.wikipedia.org/wiki/' + titleName + '">' + titleName + "</a>, ";
+
+	    for (var item in data.entities) {
+		// console.log ("item:" + item);
+		result += '<a href="http://www.wikidata.org/wiki/' + item + '">' + item + "</a>";
+		// Show it anyhow :(
+		$("#results").append(result);
+	    }
+	},
+        error: function(jqXHR,errortype,errormsg) {
+	    console.log("HELLO");
+	    $("#results").append("<p>Error: " + errortype + ". Please also look at the console log. Maybe you just violoate the JavaScript onesite policy</p>");
+	    $("#results").append("<p>jqXHR summary:" + JSON.stringify(jqXHR) + "</p>");
+	    console.log(jqXHR);
+	    console.log(errormsg);
+        }
+    })
+}
+
+</script>
+</body>
+</html>
+    

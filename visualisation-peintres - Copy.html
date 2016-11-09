@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head><title>Demo</title> <meta http-equiv="content-type" content="text/html; charset=utf-8" /></head>
+
+    <body>
+    Shows how to retrive a list of pages from Wikipedia category, then use this list to produce a list of Wikidata entries. See also the next version.
+    </p>
+
+    <input id="button1" type="button" value="Lister peintres" />
+    
+    <div id="results"></div>
+    
+    <hr>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+// $(function is the same as $(document).ready(function).
+// The ready method will run code as soon as the DOM is ready
+$(function() {
+    // event handler for the user click on the button1             
+    $("#button1").click(aller);
+});
+        
+function aller (event) {
+	
+        // Get request with a REST URL                                                              
+        $.ajax ({
+        url: 'https://en.wikipedia.org/w/api.php',
+	    type: "GET",
+	    data: {
+		  action: 'query',
+		  list: 'categorymembers',
+		  format: 'json',
+		  cmprop: 'title',
+		  cmtype: 'page',
+		  cmlimit: '500',
+		  cmtitle: 'Category:French_Impressionist_painters',
+		  origin: "*"
+	    },
+            dataType: 'json',
+	    crossDomain: true,
+	    // If we get data, then format these with a function
+            success: getWikiData,
+            error: function(jqXHR,errortype,errormsg) {
+		console.log("HELLO");
+                $("#results").append("<p>Error: " + errortype + ". Please also look at the console log. Maybe you just violoate the JavaScript onesite policy</p>");
+                $("#results").append("<p>jqXHR summary:" + JSON.stringify(jqXHR) + "</p>");
+                console.log(jqXHR);
+                console.log(errormsg);
+            }
+        });
+}
+
+
+// ------------------- get list of pages in a category from wikipedia
+
+function getWikiData (liste) {
+    // console.log(liste);
+    var pagelist = liste.query.categorymembers;
+    // console.log("pagelist:" + pagelist);
+    
+    /* Ne pas afficher la liste des pages dans wikipedia
+    var newHTML = "<p>Liste de pages wikipedia: ";
+
+    for (var page in pagelist) {
+        titleName = pagelist[page].title;
+        // console.log(titleName);
+        newHTML+= '<a href="http://en.wikipedia.org/wiki/' + titleName + '">'
+            + titleName + "</a>," ;
+        // console.log(newHTML);                                         
+    }
+    newHTML+="</p>";
+    $("#results").append(newHTML);
+   */
+    
+    doGetWikiDataEntries (pagelist);
+}
+
+// -------------- Get the list of corresponding wikidata pages
+
+function doGetWikiDataEntries (pagelist) {
+
+    $("#results").append("List of Wikidata entries: <ul>");
+
+    for (var page in pagelist) {
+        titleName = pagelist[page].title;
+        // console.log(titleName);
+	   $.ajax ({
+        url: 'https://www.wikidata.org/w/api.php',
+	    type: "GET",
+	    data: {
+		action: 'wbgetentities',
+		format: 'json',
+		sites: 'enwiki',
+		titles: titleName,
+        languages: 'en|fr',
+		origin: "*"
+	    },
+        dataType: 'json',
+	    crossDomain: true,
+	    // If we get data, then format these with a function
+	    success: doDisplayWD,
+        error: function(jqXHR,errortype,errormsg) {
+		console.log("HELLO");
+		$("#results").append("<p>Error: " + errortype + ". Please also look at the console log. Maybe you just violoate the JavaScript onesite policy</p>");
+		$("#results").append("<p>jqXHR summary:" + JSON.stringify(jqXHR) + "</p>");
+		console.log(jqXHR);
+		console.log(errormsg);
+            }
+	})
+	
+    }
+    $("#results").append("</ul>");
+}
+
+
+function doDisplayWD (data) {
+
+    var entry = data.entities;
+    // console.log("data.entities:");
+    // console.log(data.entities);
+  
+    // on cherche la seule propriété
+    for (var item in entry) {
+       
+	    // console.log("Item=");
+        // console.log (data.entities[item]);
+        
+        // On a chopé l'entée au sens propre
+        realEntry = entry[item];
+        
+        /*
+        // Debug: Lister les clefs
+        var keys = [];
+        for(var k in realEntry) keys.push(k);
+        console.log ("total " + keys.length + " keys: " + keys);
+        
+        for (var prop in realEntry) {
+        console.log ("prop=" + prop + ", propValue=" + realEntry[prop]);
+        }
+        */
+        var newHTML = "<li>";
+	    newHTML += '<a href="http://www.wikidata.org/wiki/' + item + '">'
+	       + item + "</a>";
+        
+        var label = realEntry.labels.fr.value;
+        newHTML += ", " + label;
+
+
+        var dateNaissance = realEntry.claims.P569;
+        var dateNaissance0 = realEntry.claims.P569[0];
+        // for (var prop in dateNaissance0) {
+        // console.log ("P569prop=" + prop + ", propValue=" + dateNaissance0[prop]); }
+        var dateNaissance1 = dateNaissance0.mainsnak.datavalue.value.time;
+        var dateMort = realEntry.claims.P570[0].mainsnak.datavalue.value.time;
+        // console.log ("dateNaissance1=" + dateNaissance1);
+        // console.log ("dateMort=" + dateMort);
+        newHTML += ", Né(e) le" + dateNaissance1;
+        // AFAIRE var dureeVie = dateMort - dateNaissance1;
+        newHTML += ", mort le " + dateMort;
+        
+        if(realEntry.claims.P18) {
+            var portrait = realEntry.claims.P18[0].mainsnak.datavalue.value;
+            console.log (portrait);
+            portrait = portrait.replace (/ /g, '_');
+            imageURL = "https://commons.wikimedia.org/wiki/File:" + portrait;
+            newHTML += ", <a href='" + imageURL +  "'>image</a>";
+        }
+    }
+    $("#results").append(newHTML);
+
+}
+
+</script>
+</body>
+</html>
+    
