@@ -85,7 +85,7 @@ function getWikiData (liste) {
 
 function doGetWikiDataEntries (pagelist) {
 
-    $("#results").append("List of Wikidata entries: <ul>");
+    //$("#results").append("List of Wikidata entries: <ul>");
 
     for (var page in pagelist) {
         titleName = pagelist[page].title;
@@ -185,7 +185,7 @@ function doDisplayWD (data) {
         // x = date of birth height = life length
         var height = 20;
         var width = parseInt(mypeintre.lifeLength)* 2;
-        var y = 100;
+        var y = 10;
         rect(x,y + count,width, 30);
         count += 20;
             
@@ -208,8 +208,8 @@ var width, height;
 
 function setup() {
 
-	width = 1000;
-	height = 700;
+	width = 1100;
+	height = 1000;
 	createCanvas(width,height);
 	// background en rose
 	// dans setup car celui-ci n'a besoin detre initialise 1X
