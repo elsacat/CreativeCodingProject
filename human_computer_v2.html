@@ -5,8 +5,15 @@
     <body>
     This seems to work. See <a href="https://en.wikipedia.org/w/api.php">the MW API at wikipedia. The origin property must be sent in the GET request, i.e. see the data below. </a>
     </p>
-
-    <input id="coapbutton" type="button" value="List Educational Technology" />
+    <input id="button" type="button" value="Start" />
+    <input id="1" type="button" value="Educational Technology" />
+    <input id="2" type="button" value="Human–machine interaction" />
+    <input id="3" type="button" value="Human–computer interaction" />
+    <input id="4" type="button" value="Ubiquitous computing" />
+    <input id="5" type="button" value="Affective computing" />
+    <input id="6" type="button" value="Hypermedia" />
+    <input id="7" type="button" value="Digital media" />
+    <input id="8" type="button" value="Digital divide" />
     
     <h2>Query results</h2>
     
@@ -20,17 +27,23 @@
 // The ready method will run code as soon as the DOM is ready                                       
 var listeCategories = [];
 var categoriesListEn = ["Educational_technology", "Human–machine_interaction","Human–computer_interaction", "Ubiquitous_computing","Affective_computing","Social_robots","Hypermedia","Digital_media","Digital_divide"]; 
+
+//var categoriesListfr = ["Sociologie_des_technologies","Internet","Humanités_numériques","Société de l'information"];
 $(function() {
     
-    // event handler for the user click on the coapbutton                                           
-    $("#coapbutton").click(function(event) {
-	
-        // Get request with a REST URL
-        
-        //var categoriesListfr = ["Sociologie_des_technologies","Internet","Humanités_numériques","Société de l'information"];
-       
-        for (var categoryEn in categoriesListEn) {
-            console.log("category : " + categoryEn);
+    // event handler for the user click on the button                                           
+    $("#button").click(doRequestWiki);
+    //doRequestWiki();
+    $("#button1").click(doDisplayCategory);
+
+
+});
+
+
+function doRequestWiki () {
+
+    for (var categoryEn in categoriesListEn) {
+            //console.log("category : " + categoryEn);
             $.ajax ({
                 url: 'https://en.wikipedia.org/w/api.php',
             type: "GET",
@@ -57,9 +70,7 @@ $(function() {
                 }
             });
         };
-    });
-});
-
+}
 function doCategories (data) {
     // Extract the categorymembers array. It should be clean.                                         
     var pagelist = data.query.categorymembers;
@@ -105,7 +116,7 @@ function doCategories (data) {
     }
 
     listeCategories.push(liste);
-    console.log(listeCategories);
+    //console.log(listeCategories);
 
 }
 
@@ -120,9 +131,22 @@ function doCategories (data) {
                 title : page1.title,
                 watchers : page1.watchers
             };
+        //console.log("JSON: stringify" + JSON.stringify(obj, null, 4));
         }
         
         return obj;
+    }
+
+    function doDisplayCategory(event) {
+        console.log("event" + event);
+        //alert(JSON.stringify(event));
+        console.log("event.id= " + this.id);
+        buttonid = this.id;
+        echo("buttonid" + buttonid);
+        echo("liste categorie button " + listeCategories[buttonid]);
+        
+        
+
     }
     
     // Each element of the array is an object that looks like {"ns":106, "title":"COAP:COAP-31....."}
