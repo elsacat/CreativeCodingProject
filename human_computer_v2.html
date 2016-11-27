@@ -18,7 +18,8 @@
 
 // $(function is the same as $(document).ready(function).                                           
 // The ready method will run code as soon as the DOM is ready                                       
-
+var listeCategories = [];
+var categoriesListEn = ["Educational_technology", "Human–machine_interaction","Human–computer_interaction", "Ubiquitous_computing","Affective_computing","Social_robots","Hypermedia","Digital_media","Digital_divide"]; 
 $(function() {
     
     // event handler for the user click on the coapbutton                                           
@@ -26,10 +27,8 @@ $(function() {
 	
         // Get request with a REST URL
         
-        var categoriesListEn = ["Educational_technology", "Human–machine_interaction","Human–computer_interaction", "Ubiquitous_computing","Affective_computing","Social_robots","Hypermedia","Digital_media","Digital_divide"]; 
-        
-        var categoriesListfr = ["Sociologie_des_technologies","Internet","Humanités_numériques","Société de l'information"];
-        
+        //var categoriesListfr = ["Sociologie_des_technologies","Internet","Humanités_numériques","Société de l'information"];
+       
         for (var categoryEn in categoriesListEn) {
             console.log("category : " + categoryEn);
             $.ajax ({
@@ -103,17 +102,28 @@ function doCategories (data) {
     //newHTML+="</ul>";
     //return (newHTML);
     //$("#results").append(newHTML);
-
     }
 
+    listeCategories.push(liste);
+    console.log(listeCategories);
+
+}
+
     function doPage (data) {
+        var page0 = data.query.pages;
+        var obj = {};
 
-        var obj = {
-            titre = 
-
-        };
+        for (var item in page0) {
+            page1 = page0[item];
+            console.log("page1:" + page1.title);
+            obj = {
+                title : page1.title,
+                watchers : page1.watchers
+            };
+        }
+        
         return obj;
-    };
+    }
     
     // Each element of the array is an object that looks like {"ns":106, "title":"COAP:COAP-31....."}
     // We only need the value of the title property.                                                  
@@ -129,7 +139,7 @@ function doCategories (data) {
     }*/
 
     
-}
+
 
 </script>
     </body>
