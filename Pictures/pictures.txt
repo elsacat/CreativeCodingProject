@@ -1,0 +1,7 @@
+Her are the pictures of my project
+http://stackoverflow.com/questions/18773598/creating-folders-inside-github-com-repo-without-using-git
+After searching a lot I find out that it is possible to create a new folder from the web interface, but it would require you to have at least one file within the folder when creating it.
+
+When using the normal way of creating new files through the web interface, you can type in the folder into the file name to create the file within that new directory.
+
+E.g. If I would like to create the file filename.md in a series of sub-folders, I can do this (taken from the GitHub Blog): 
