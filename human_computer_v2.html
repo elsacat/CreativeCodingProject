@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head><title>Demo</title> <meta http-equiv="content-type" content="text/html; charset=utf-8" /></head>
+
+    <body>
+    This seems to work. See <a href="https://en.wikipedia.org/w/api.php">the MW API at wikipedia. The origin property must be sent in the GET request, i.e. see the data below. </a>
+    </p>
+
+    <input id="coapbutton" type="button" value="List Educational Technology" />
+    
+    <h2>Query results</h2>
+    
+    <div id="results"></div>
+    
+    <hr>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+// $(function is the same as $(document).ready(function).                                           
+// The ready method will run code as soon as the DOM is ready                                       
+
+$(function() {
+    
+    // event handler for the user click on the coapbutton                                           
+    $("#coapbutton").click(function(event) {
+	
+        // Get request with a REST URL
+        
+        var categoriesListEn = ["Educational_technology", "Human–machine_interaction","Human–computer_interaction", "Ubiquitous_computing","Affective_computing","Social_robots","Hypermedia","Digital_media","Digital_divide"]; 
+        
+        var categoriesListfr = ["Sociologie_des_technologies","Internet","Humanités_numériques","Société de l'information"];
+        
+        for (var categoryEn in categoriesListEn) {
+            console.log("category : " + categoryEn);
+            $.ajax ({
+                url: 'https://en.wikipedia.org/w/api.php',
+            type: "GET",
+            data: {
+            action: 'query',
+            list: 'categorymembers',
+            format: 'json',
+            cmprop: 'title',
+            cmtype: 'page',
+            cmlimit: '500',
+            cmtitle: 'Category:'+categoriesListEn[categoryEn],
+            origin: "*"
+            },
+            dataType: 'json',
+            crossDomain: true,
+            // If we get data, then format these with a function
+                success: doCategories,
+                error: function(jqXHR,errortype,errormsg) {
+                    console.log("HELLO");
+                    $("#results").append("<p>Error: " + errortype + ". Please also look at the console log. Maybe you just violoate the JavaScript onesite policy</p>");
+                    $("#results").append("<p>jqXHR summary:" + JSON.stringify(jqXHR) + "</p>");
+                    console.log(jqXHR);
+                    console.log(errormsg);
+                }
+            });
+        };
+    });
+});
+
+function doCategories (data) {
+    // Extract the categorymembers array. It should be clean.                                         
+    var pagelist = data.query.categorymembers;
+    // debug                                                                                          
+    //console.log(pagelist);                                                                         
+    //var newHTML = "<ul>";
+    //console.log(pagelist[1].title);
+    var liste = [];
+    for (var page in pagelist) {
+        var data1 = {
+                action: 'query',
+                titles: pagelist[page].title,
+                inprop: 'watchers',
+                prop:'info',
+                format: 'json',
+                origin: "*"
+            };
+        //console.log(data1);
+
+        $.ajax ({
+                url: 'https://en.wikipedia.org/w/api.php',
+                type: "GET",
+                data: data1,
+                dataType: 'json',
+                crossDomain: true,
+                // If we get data, then format these with a function
+                success: function(data) {
+                    // create an array with object 
+                    liste.push(doPage(data));
+                },
+                error: function(jqXHR,errortype,errormsg) {
+                    console.log("HELLO");
+                    //$("#results").append("<p>Error: " + errortype + ". Please also look at the console log. Maybe you just violoate the JavaScript onesite policy</p>");
+                    //$("#results").append("<p>jqXHR summary:" + JSON.stringify(jqXHR) + "</p>");
+                    console.log(jqXHR);
+                    console.log(errormsg);
+                }
+            });
+
+    //newHTML+="</ul>";
+    //return (newHTML);
+    //$("#results").append(newHTML);
+
+    }
+
+    function doPage (data) {
+
+        var obj = {
+            titre = 
+
+        };
+        return obj;
+    };
+    
+    // Each element of the array is an object that looks like {"ns":106, "title":"COAP:COAP-31....."}
+    // We only need the value of the title property.                                                  
+    // Strange loop                                                                                   
+    /*for (var page in pagelist) {
+
+        titleName = pagelist[page].title;
+        console.log(titleName);                                                                    
+        // probably there are functions to do this ...                                                
+        newHTML+= "<li>" + '<a href="http://en.wikipedia.org/wiki/' + titleName + '">'
+            + titleName + "</a>";
+        // console.log(newHTML);                                                                      
+    }*/
+
+    
+}
+
+</script>
+    </body>
+    </html>
