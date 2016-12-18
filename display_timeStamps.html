@@ -71,8 +71,11 @@ function doCategories (data) {
                 inprop: 'watchers',
                 prop: 'info',
                 prop: 'revisions',
+                rvprop: 'timestamp',
+                rvlimit: '500',
                 format: 'json',
-                origin: "*"
+                origin: "*",
+                rvcontinue: ''
             };
         //console.log(data1);
 
@@ -113,10 +116,12 @@ function doPage (data) {
 
         for (var item in page0) {
             page1 = page0[item];
-            console.log("page1:" + page1.title);
+            console.log("page : " + page1.title);
             obj = {
                 title : page1.title,
-                watchers : page1.watchers
+                //watchers : page1.watchers
+                revisions : page1.revisions
+               
             };
         console.log("JSON: stringify" + JSON.stringify(obj, null, 4));
         }
