@@ -3,23 +3,23 @@
  <head><title>Demo</title> <meta http-equiv="content-type" content="text/html; charset=utf-8" /></head>
 
  <body>
-    
-</p>
 
+ </p>
+ 
+ <div id="chartContainer" style="height: 800px; width: 100%;">
+    </div>
+ <hr>
+ <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+ <script src="libraries/canvasjs.min.js"></script>
+ <script type="text/javascript">
 
+ var liste = [];
+ var listeMatrices = [];
+ var compteurPage = 0;
 
-<h2>Query results</h2>
+ var pagelist = ["Smartdust","Artificial_general_intelligence","IEEE_802.11ax","Neuromorphic_engineering","Quantum_computing","Human_enhancement","Quantified_Self","Volumetric_display", "Brain–computer_interface","Intelligent_personal_assistant","Affective_computing","Unmanned_aerial_vehicle","Internet_of_things","Gesture_recognition","Micro_Data_Center","Blockchain_(database)","Home_automation","Machine_learning","Software-defined_protection","Vehicular_automation","Autonomous_car","Carbon_nanotube","Natural_language_user_interface","Question_answering","Augmented_reality","Virtual_reality","Corporate_taxonomy"];
 
-<div id="results"></div>
-
-<hr>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-<script type="text/javascript">
-
-var liste = [];
-var pagelist = ["Smartdust","Artificial_general_intelligence","IEEE_802.11ax","Neuromorphic_engineering","Quantum_computing","Human_enhancement","Quantified_Self","Volumetric_display", "Brain–computer_interface","Intelligent_personal_assistant","Affective_computing","Unmanned_aerial_vehicle","Internet_of_things","Gesture_recognition","Micro_Data_Center","Blockchain_(database)","Home_automation","Machine_learning","Software-defined_protection","Vehicular_automation","Autonomous_car","Carbon_nanotube","Natural_language_user_interface","Question_answering","Augmented_reality","Virtual_reality","Corporate_taxonomy"];
-
-console.log("Nombre de pages : " + pagelist.length);
+ console.log("Nombre de pages : " + pagelist.length);
 // $(function is the same as $(document).ready(function).                                           
 // The ready method will run code as soon as the DOM is ready 
 
@@ -27,10 +27,10 @@ function collectObject(obj) {
 
     if((obj.title in liste) && (liste[obj.title].title == obj.title)) {
         // cree un nouveau array
-        console.log("revisions before " +  liste[obj.title].revisions);
-        console.log("revision concat" + (obj.revisions));
+        // console.log("revisions before " +  liste[obj.title].revisions);
+        // console.log("revision concat" + (obj.revisions));
         var nouveau = liste[obj.title].revisions.concat(obj.revisions);
-        console.log("revisions after" + nouveau);
+        // console.log("revisions after" + nouveau);
 
         liste[obj.title].revisions = nouveau;
     }
@@ -61,11 +61,11 @@ function ajaxCall(page,rvcontinue) {
 
 
     $.ajax ({
-            url: 'https://en.wikipedia.org/w/api.php',
-            type: "GET",
-            data: data1,
-            dataType: 'json',
-            crossDomain: true,
+        url: 'https://en.wikipedia.org/w/api.php',
+        type: "GET",
+        data: data1,
+        dataType: 'json',
+        crossDomain: true,
                 // If we get data, then format these with a function
                 success: function(data) {
                     if("continue" in data) {
@@ -74,24 +74,29 @@ function ajaxCall(page,rvcontinue) {
                       ajaxCall(page,data.continue.rvcontinue);
                       // a refaire identifier quand jai eu le dernier resultat 
                       //if(data.query.pages.)
-                    }
+                  }
 
-                    else {
-                        collectObject(doPage(data));
-                        compteurPage++;
-                        if (compteurPage == pageNumber)
-                        {
-                             console.log("liste" + liste);
+                  else {
+                    collectObject(doPage(data));
+                    compteurPage++;
+
+                    if (compteurPage == pageNumber)
+                    {
+                            /*for(obj in liste) {
+                                console.log(liste[obj]);
+                            }*/
+                            
                             createDataMatrix();
+
                         }
 
                     // create an array with object 
                     //console.log(data);
                     //liste.push(doPage(data));
-                    }
-                },
-                error: function(jqXHR,errortype,errormsg) {
-                    console.log("HELLO");
+                }
+            },
+            error: function(jqXHR,errortype,errormsg) {
+                console.log("HELLO");
                     //$("#results").append("<p>Error: " + errortype + ". Please also look at the console log. Maybe you just violoate the JavaScript onesite policy</p>");
                     //$("#results").append("<p>jqXHR summary:" + JSON.stringify(jqXHR) + "</p>");
                     console.log(jqXHR);
@@ -100,7 +105,7 @@ function ajaxCall(page,rvcontinue) {
             });
 }
 
-var compteurPage = 0;
+
 function doPage (data) {
     var page0 = data.query.pages;
     var obj = {};
@@ -118,26 +123,133 @@ function doPage (data) {
     return obj;
 };
 
+function createDataMatrixOld() {
+    for(var obj in liste) {
+        //console.log("revisions"+liste[obj].revisions);
+        var revisions = liste[obj].revisions;
+        var revisionsPage = [];
+        for(var rev in revisions) {
+            var annee = revisions[rev].timestamp.substring(0, 4);
+            //console.log("annee " + annee);
+            if(annee in revisionsPage) {
+
+             revisionsPage[annee] = revisionsPage[annee]+1;
+         }
+         else {
+            revisionsPage[annee] = 1;
+        }
+    };
+
+    console.log
+    listeMatrices[liste[obj].title] = revisionsPage;
+        //console.log("obj.revision" + obj.revision);   
+        
+    };
+    console.log("liste matrice");
+    console.log(listeMatrices);
+}
 
 
 
-var pageNumber = pagelist.length;
-
-for (var page in pagelist) {
-    console.log("titre page : " + pagelist[page]);
-
-   ajaxCall(pagelist[page]);
-
-};
-
-                       
 
 function createDataMatrix() {
-    for(obj in liste) {
-        var revisions = obj.revisions;
-        console.log("obj.revision" + obj.revision);
+    var data = [];
+    for(var objPage in liste) {
+        //console.log("revisions"+liste[objPage].revisions);
+        var revisions = liste[objPage].revisions;
+        var revisionsPage = [];
+        var page = {
+            type : "line",
+            showInLegend: true,
+            lineThickness: 2,
+            name: liste[objPage].title,
+            markerType: "square",
+            //color: "#F08080"
+            color: "hsl(" + Math.random()*360 + ", 100%, 50%)"
+        };
+
+        var revisionsPage = [];
+        for(var rev in revisions) {
+            var annee = revisions[rev].timestamp.substring(0, 4);
+            //console.log("annee " + annee);
+            if(annee in revisionsPage) {
+
+               revisionsPage[annee] = revisionsPage[annee]+1;
+            }
+           else {
+                revisionsPage[annee] = 1;
+            }
+        };
+
+        var dataPointsPage = [];
+        // create points for each page
+        for(var annee in revisionsPage) {
+            var point = {
+                x: new Date(parseInt(annee), 12, 31), 
+                y: revisionsPage[annee]
+            }
+
+            dataPointsPage.push (point);
+        };
+        page.dataPoints = dataPointsPage;
+        data.push(page);
+
     };
+    display(data);
 }
+
+
+function display(data){
+    var chart = new CanvasJS.Chart("chartContainer", {
+                title: {
+                    text: "Wikipedia Hype Cycle for Emerging Technologies, from 2001 onward",
+                    fontSize: 20
+                },
+                animationEnabled: true,
+                axisX: {
+                    gridColor: "Silver",
+                    tickColor: "silver",
+                    valueFormatString: "YYYY"
+                },
+                toolTip: {
+                    shared: true
+                },
+                theme: "theme2",
+                axisY: {
+                    gridColor: "Silver",
+                    tickColor: "silver"
+                },
+                legend: {
+                    verticalAlign: "center",
+                    horizontalAlign: "right"
+                },
+                data: data,
+                legend: {
+                    cursor: "pointer",
+                    itemclick: function (e) {
+                        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                            e.dataSeries.visible = false;
+                        }
+                        else {
+                            e.dataSeries.visible = true;
+                        }
+                        chart.render();
+                    }
+                }
+            });
+
+            chart.render();
+}
+
+
+    var pageNumber = pagelist.length;
+
+    for (var page in pagelist) {
+        //console.log("titre page : " + pagelist[page]);
+
+        ajaxCall(pagelist[page]);
+
+    };
 
 
 
