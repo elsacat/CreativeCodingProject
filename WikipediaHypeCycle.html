@@ -185,7 +185,7 @@ function createDataMatrix() {
         // create points for each page
         for(var annee in revisionsPage) {
             var point = {
-                x: new Date(parseInt(annee), 12, 31), 
+                x: new Date(parseInt(annee), 0, 0), 
                 y: revisionsPage[annee]
             }
 
@@ -202,13 +202,28 @@ function createDataMatrix() {
 function display(data){
     var chart = new CanvasJS.Chart("chartContainer", {
                 title: {
-                    text: "Wikipedia Hype Cycle for Emerging Technologies, from 2001 onward",
-                    fontSize: 50
+                    text: "Wikipedia Hype Cycle for Emerging Technologies",
+                    // from 2001 onward yearly revisions
+                    //fontWeight: "bolder",
+                    fontSize: 50,
+                    padding: 10,
+                    
                 },
+                subtitles:[
+                {
+                    text: "Yearly Revisions Number of Emerging Technologies Pages in Wikipedia from 2001 - onward",
+                    fontFamily: "calibri"
+                    //Uncomment properties below to see how they behave
+                    //fontColor: "red",
+                    //fontSize: 30
+                }],
                 animationEnabled: true,
                 axisX: {
+                    fontFamily: "calibri",
                     gridColor: "Silver",
                     tickColor: "silver",
+                    labelFontSize : "20",
+                    labelFontFamily : "calibri",
                     valueFormatString: "YYYY"
                 },
                 toolTip: {
@@ -216,11 +231,17 @@ function display(data){
                 },
                 theme: "theme2",
                 axisY: {
+                    titleFontFamily : "calibri",
                     title : "Number of Revisions",
+                    maximum : 1100,
+                    labelFontFamily : "calibri",
+                    labelFontSize : "20",
                     gridColor: "Silver",
                     tickColor: "silver"
                 },
                 legend: {
+                    fontSize : 20,
+                    fontFamily : "calibri",
                     verticalAlign: "center",
                     horizontalAlign: "right"
                 },
