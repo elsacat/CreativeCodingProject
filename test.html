@@ -72,12 +72,19 @@ function ajaxCall(page,rvcontinue) {
                       //console.log("continue");
                       collectObject(doPage(data));
                       ajaxCall(page,data.continue.rvcontinue);
-                      // a refaire
-                      
+                      // a refaire identifier quand jai eu le dernier resultat 
+                      //if(data.query.pages.)
                     }
 
                     else {
                         collectObject(doPage(data));
+                        compteurPage++;
+                        if (compteurPage == pageNumber)
+                        {
+                             console.log("liste" + liste);
+                            createDataMatrix();
+                        }
+
                     // create an array with object 
                     //console.log(data);
                     //liste.push(doPage(data));
@@ -93,7 +100,7 @@ function ajaxCall(page,rvcontinue) {
             });
 }
 
-
+var compteurPage = 0;
 function doPage (data) {
     var page0 = data.query.pages;
     var obj = {};
@@ -114,7 +121,7 @@ function doPage (data) {
 
 
 
-
+var pageNumber = pagelist.length;
 
 for (var page in pagelist) {
     console.log("titre page : " + pagelist[page]);
@@ -123,9 +130,7 @@ for (var page in pagelist) {
 
 };
 
-console.log("liste" + liste);
-
-createDataMatrix();
+                       
 
 function createDataMatrix() {
     for(obj in liste) {
