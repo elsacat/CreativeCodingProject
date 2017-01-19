@@ -7,8 +7,7 @@
  </p>
  
  <div id="chartContainer" style="height: 800px; width: 100%;">
-    </div>
- <hr>
+ </div>
  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
  <script src="libraries/canvasjs.min.js"></script>
  <script type="text/javascript">
@@ -201,6 +200,7 @@ function createDataMatrix() {
 
 function display(data){
     var chart = new CanvasJS.Chart("chartContainer", {
+                //height:1000,
                 title: {
                     text: "Wikipedia Hype Cycle for Emerging Technologies",
                     // from 2001 onward yearly revisions
